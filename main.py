@@ -10,11 +10,22 @@ from pymoo.algorithms.moo.nsga2 import NSGA2
 from pymoo.operators.crossover.sbx import SBX
 from pymoo.operators.mutation.pm import PM
 from pymoo.optimize import minimize
-import matplotlib.pyplot as plt
 from lib.cmd import pluck_flags_from_cmd_args
-from utils.plot_graph import plot_vrp_instance
+from utils.plot import plot_vrp_instance, plot_pareto_frontier, plot_solution_routes
 from src.parser.domain_mapper import get_instance
 from src.domain.domain_problem import DomainProblem
+from src.domain.vrp_notation import VrpNotation
+from src.support.solution import knee_point
+
+
+def show_input(vrp: VrpNotation) -> None:
+    print("=" * 35)
+    print("Input Data")
+    print("=" * 35, end="\n\n")
+
+    print("Nodes:", vrp.nodes)
+    print("Demand:", vrp.demands, end="\n\n")
+    print("-" * 35, end="\n\n")
 
 
 def app() -> None:
@@ -22,6 +33,7 @@ def app() -> None:
         search_for=['instance', 'plot', 'generate-result'])
 
     instance = get_instance(flags['instance'])
+    show_input(instance)
 
     if flags['plot']:
         plot_vrp_instance(instance, flags['instance'])
@@ -40,12 +52,13 @@ def app() -> None:
         ('n_gen', 200),
         seed=1,
     )
+    routes = problem.decode(knee_point(res))
 
     if flags['generate-result']:
-        plt.scatter(res.F[:, 0], res.F[:, 1])
-        plt.xlabel("Distância total")
-        plt.ylabel("Makespan")
-        plt.savefig(f"./resources/output/result-{flags['instance']}.png")
+        plot_pareto_frontier(res, flags['instance'])
+        plot_solution_routes(instance, routes, flags['instance'])
+    print("Best choice via Knee Point:", [
+          list(map(int, route)) for route in routes])
 
 
 if __name__ == "__main__":

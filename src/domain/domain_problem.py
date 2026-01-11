@@ -20,7 +20,7 @@ class DomainProblem(ElementwiseProblem):
             type_var=float
         )
 
-    def __decode(self, x: list[float]) -> list[list[int]]:
+    def decode(self, x: list[list[float]]) -> list[list[int]]:
         permutation = [v + 1 for v in np.argsort(x)]
         routes: list[list[int]] = []
         current_route = []
@@ -43,8 +43,8 @@ class DomainProblem(ElementwiseProblem):
 
         return sqrt(x_diff_ij**2 + y_diff_ij**2)
 
-    def _evaluate(self, x: list[float], out: dict[str, Any], *args, **kwargs):
-        routes = self.__decode(x)
+    def _evaluate(self, x: list[list[float]], out: dict[str, Any], *args, **kwargs):
+        routes = self.decode(x)
         total_distance = 0
         max_route_distance = 0
 
