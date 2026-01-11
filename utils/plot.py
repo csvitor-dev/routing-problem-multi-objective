@@ -38,29 +38,33 @@ def plot_pareto_frontier(res: Result, ref: str):
 def plot_solution_routes(vrp: VrpNotation, routes: list[list[int]], ref: str):
     plt.figure()
 
-    depot_x, depot_y = vrp.nodes[vrp.depot]
-
-    for node, (x, y) in vrp.nodes.items():
-        if node == vrp.depot:
-            plt.scatter(x, y, marker="s",  c="tab:orange")
+    for i, (x, y) in vrp.nodes.items():
+        if i == vrp.depot:
+            plt.scatter(x, y, marker="s", c="tab:orange")
+            plt.text(x + 0.1, y + 0.1, str(i), fontsize=8)
         else:
-            plt.scatter(x, y,  c="tab:blue")
-        plt.text(x + 0.1, y + 0.1, str(node), fontsize=8)
+            plt.scatter(x, y, c="tab:blue")
+            plt.text(x + 0.1, y + 0.1, str(i), fontsize=8)
 
     for route in routes:
-        xs = [depot_x]
-        ys = [depot_y]
+        full_route = [vrp.depot] + route + [vrp.depot]
 
-        for client in route:
-            x, y = vrp.nodes[client]
-            xs.append(x)
-            ys.append(y)
+        for i in range(len(full_route) - 1):
+            x1, y1 = vrp.nodes[full_route[i]]
+            x2, y2 = vrp.nodes[full_route[i + 1]]
+            dx = x2 - x1
+            dy = y2 - y1
 
-        xs.append(depot_x)
-        ys.append(depot_y)
-
-        plt.plot(xs, ys)
-
+            plt.quiver(
+                x1, y1, dx, dy,
+                angles="xy",
+                scale_units="xy",
+                scale=1,
+                width=0.003,
+                headwidth=5,
+                headlength=6,
+                headaxislength=5
+            )
     plt.xlabel("X")
     plt.ylabel("Y")
     plt.title("Rotas VRP")
