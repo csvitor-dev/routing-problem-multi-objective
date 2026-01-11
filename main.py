@@ -7,8 +7,9 @@ Equipe:
 """
 
 from pymoo.algorithms.moo.nsga2 import NSGA2
-from pymoo.operators.crossover.sbx import SBX
-from pymoo.operators.mutation.pm import PM
+from pymoo.operators.sampling.rnd import PermutationRandomSampling
+from pymoo.operators.crossover.ox import OrderCrossover
+from pymoo.operators.mutation.inversion import InversionMutation
 from pymoo.optimize import minimize
 from lib.cmd import pluck_flags_from_cmd_args
 from utils.plot import plot_vrp_instance, plot_pareto_frontier, plot_solution_routes
@@ -41,8 +42,9 @@ def app() -> None:
     problem = DomainProblem(instance)
     algorithm = NSGA2(
         pop_size=100,
-        crossover=SBX(prob=0.9, eta=15),
-        mutation=PM(prob=0.2, eta=20),
+        sampling=PermutationRandomSampling(),
+        crossover=OrderCrossover(prob=0.9),
+        mutation=InversionMutation(prob=0.3),
         eliminate_duplicates=True
     )
 
@@ -62,4 +64,7 @@ def app() -> None:
 
 
 if __name__ == "__main__":
-    app()
+    try:
+        app()
+    except Exception as e:
+        print("Errors:", e.args)

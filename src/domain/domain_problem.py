@@ -1,5 +1,4 @@
 from pymoo.core.problem import ElementwiseProblem
-import numpy as np
 from math import sqrt
 from typing import Any
 from src.domain.vrp_notation import VrpNotation
@@ -15,13 +14,13 @@ class DomainProblem(ElementwiseProblem):
         super().__init__(
             n_var=vrp.dimension,
             n_obj=2,
-            xl=0.0,
-            xu=1.0,
-            type_var=float
+            xl=0,
+            xu=vrp.dimension - 1,
+            type_var=int
         )
 
-    def decode(self, x: list[list[float]]) -> list[list[int]]:
-        permutation = [v + 1 for v in np.argsort(x)]
+    def decode(self, x: list[int]) -> list[list[int]]:
+        permutation = [v + 1 for v in x]
         routes: list[list[int]] = []
         current_route = []
         load = 0
